@@ -1,0 +1,15 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ hostname ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: hostname
+        run: echo "${{github.head_ref || github.ref_name}}"
+      
