@@ -3,13 +3,32 @@ name: CI Pipeline
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ hostname ]
+    paths:
+      - 'terraform/**'
+    workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: terraform
 
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
     steps:
-      - name: hostname
-        run: echo "${{github.head_ref || github.ref_name}}"
-      
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform format
+        uses: terraform fmt -check -recursive
+
+      - name: Terraform Init
+        uses: terraform init
+
+      - name: Terraform Validate
+        uses: terraform validate
+
+      - name: Terraform Plan
+        uses: terraform plan -input+false
